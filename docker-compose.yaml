@@ -1,4 +1,18 @@
 services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/ssl:ro
+
+    networks:
+      - my-composed-network
+    depends_on:
+      - app
+
   app:
     container_name: go_app
     build:
@@ -16,7 +30,7 @@ services:
       - DB_PORT=3306
       - DB_PASSWORD_FILE=/run/secrets/db_password
       - DB_NAME=example
-    
+
     secrets:
       - db_password
 
@@ -47,4 +61,4 @@ networks:
 
 secrets:
   db_password:
-    file: ./DB_PASSWORD_FILE 
+    file: ./DB_PASSWORD_FILE
